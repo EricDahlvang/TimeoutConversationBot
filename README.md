@@ -21,3 +21,24 @@ A concurrent dictionary of TimeoutConversationReference, keyed on Conversation.I
 
 When an activity is received by the bot, the concurrent dictionary is checked for an existing TimeoutConversationReference.  If one is present, the LastAccessed is compared to the current time and DialogState is cleared if the conversation has expired.
 
+```cs
+        private async Task AddOrUpdateConversationReference(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+            TimeoutConversationReference timeoutConversation = null;
+            if (_conversationReferences.TryGetValue(activity.Conversation.Id, out timeoutConversation))
+            {
+                if (timeoutConversation.LastAccessed.AddSeconds(TimeoutSeconds) < DateTime.UtcNow)
+                {
+                    await turnContext.SendActivityAsync("Welcome back!  Let's start over from the beginning.");
+                    await DialogState.DeleteAsync(turnContext);
+                }
+                timeoutConversation.LastAccessed = DateTime.UtcNow;
+            }
+            else
+            {
+                var timeoutReference = new TimeoutConversationReference(activity.GetConversationReference());
+                _conversationReferences.AddOrUpdate(timeoutReference.ConversationReference.Conversation.Id, timeoutReference, (key, newValue) => timeoutReference);
+            }
+        }
+```
