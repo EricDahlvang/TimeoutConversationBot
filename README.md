@@ -1,3 +1,6 @@
+See also: https://github.com/EricDahlvang/TimeoutConversation  for an Aure Function method of accomplishing something similar, in a proactive way.
+
+
 # TimeoutConversationBot
 
 Modified https://github.com/microsoft/BotBuilder-Samples/tree/master/samples/csharp_dotnetcore/05.multi-turn-prompt 
